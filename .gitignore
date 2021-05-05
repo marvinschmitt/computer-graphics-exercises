@@ -1,3 +1,9 @@
+*.vcxproj
+*.sln
+*.idea
+.idea/
+*/.idea/
+
 # OS
 .DS_Store
 *.zip
