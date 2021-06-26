@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "C:/Users/Work/source/repos/marvinschmitt/computer-graphics-exercises/ex10/rasterizer2/glm/out/build/x64-Debug/CMakeFiles/glm.dir/embed.manifest"

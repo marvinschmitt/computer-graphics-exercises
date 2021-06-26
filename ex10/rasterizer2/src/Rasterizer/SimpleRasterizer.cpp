@@ -21,6 +21,7 @@ SimpleRasterizer::SimpleRasterizer()
   ambientLight = vec3(0.01f);
 }
 
+
 bool SimpleRasterizer::CompareTriangle(const Triangle &t1, const Triangle &t2)
 {
   // These aren't actually the mean values, but since both are off by a constant factor (3),
@@ -30,24 +31,54 @@ bool SimpleRasterizer::CompareTriangle(const Triangle &t1, const Triangle &t2)
 }
 
 
-void SimpleRasterizer::DrawSpan(int x1, int x2, int y, float z1, float z2, vec3 &color1,
-                vec3 &color2)
+void SimpleRasterizer::DrawSpan(int x1, int x2, int y, float z1, float z2, const vec3 &color1, const vec3 &color2)
 {
+    if (x1 > x2)
+    {
+        int temp = x1;
+        x1 = x2;
+        x2 = temp;
+    }
+
+    for (int x = x1; x <= x2; ++x) 
+    {
+        if ((x > 0) && (x < image->GetWidth()) && (y > 0) && (y < image->GetHeight()))
+        {
+            image->SetPixel(x, y, color1);
+        }
+    }
   // TODO Aufgabe 2: Ersetzen des Zeichnens der Eckpunkte 
   // durch Dreiecksrasterisierer, Gouraud Shading, [z-Buffering]
 }
 
 void SimpleRasterizer::DrawTriangle(const Triangle &t)
 {
-  for (int i = 0; i < 3; ++i)
-  {
-    int x = (int)t.position[i].x;
-    int y = (int)t.position[i].y;
-    if ((x > 0) && (x < image->GetWidth()) && (y > 0) && (y < image->GetHeight()))
-    {
-      image->SetPixel(x, y, t.color[i]);
-    }
-  }
+  //for (int i = 0; i < 3; ++i)
+  //{
+  //  int x = (int)t.position[i].x;
+  //  int y = (int)t.position[i].y;
+  //  if ((x > 0) && (x < image->GetWidth()) && (y > 0) && (y < image->GetHeight()))
+  //  {
+  //    image->SetPixel(x, y, t.color[i]);
+  //  }
+  //}
+  // 
+
+
+
+
+  // TODO: sort vertices counter-clockwise! Idea: use cross product
+
+  DrawSpan(
+      (int)t.position[0].x, 
+      (int)t.position[1].x, 
+      (int)t.position[1].y, 
+      (float)t.position[0].z, 
+      (float)t.position[1].z,
+      t.color[0],
+      t.color[1]
+  );
+
   // TODO Aufgabe 2: Ersetzen des Zeichnens der Eckpunkte 
   // durch Dreiecksrasterisierer, Gouraud Shading, [z-Buffering]
 }

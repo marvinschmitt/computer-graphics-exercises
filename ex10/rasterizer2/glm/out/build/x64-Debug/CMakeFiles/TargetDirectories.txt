@@ -1,0 +1,3 @@
+C:/Users/Work/source/repos/marvinschmitt/computer-graphics-exercises/ex10/rasterizer2/glm/out/build/x64-Debug/CMakeFiles/glm.dir
+C:/Users/Work/source/repos/marvinschmitt/computer-graphics-exercises/ex10/rasterizer2/glm/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/Work/source/repos/marvinschmitt/computer-graphics-exercises/ex10/rasterizer2/glm/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir

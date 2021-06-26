@@ -66,8 +66,7 @@ namespace Rasterizer
      *   the left side (x1 or x2, whichever is less) and excluding the pixel on the right
      *   side (x2 or x1, whichever is greater).
      */
-    void DrawSpan(int x1, int x2, int y, float z1, float z2, 
-                  glm::vec3 &color1, glm::vec3 &color2);
+    void DrawSpan(int x1, int x2, int y, float z1, float z2, const glm::vec3 &color1, const glm::vec3 &color2);
     
     /**
      * Draws a single triangle.
@@ -127,6 +126,8 @@ namespace Rasterizer
      * Constructs a new SimpleRasterizer object.
      */
     SimpleRasterizer();
+
+    
 
     /**
      * Rasterizes a scene into an image.
