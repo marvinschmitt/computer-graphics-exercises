@@ -21,6 +21,10 @@ SimpleRasterizer::SimpleRasterizer()
   ambientLight = vec3(0.01f);
 }
 
+bool SimpleRasterizer::CompareVertexScanline(const vec3& p1, const vec3& p2)
+{
+    return (p1.x < p2.x);
+}
 
 bool SimpleRasterizer::CompareTriangle(const Triangle &t1, const Triangle &t2)
 {
@@ -63,20 +67,46 @@ void SimpleRasterizer::DrawTriangle(const Triangle &t)
   //  }
   //}
   // 
+  
+    // Create triangle tr that has sorted vertices of t. We can't sort in t since it's const in the provided code
+    vector<int> idx{ 0, 1, 2 };
+    sort(idx.begin(), idx.end(), [&](int i, int j) {return t.position[i].x < t.position[j].x; });
+
+    Triangle tr;
+    for (int i = 0; i < 3; ++i) {
+       int t_idx = idx[i];
+       tr.SetVertex(i, t.position[t_idx], t.normal[t_idx], t.color[t_idx]);
+    }
+
+    // somehow, INFINITY didn't work and led to y_b = 0 :(
+    int y_t = -10000;
+    int y_b = 10000;
+    int t = -1;
+    int b = -1;
+
+    for (int i = 0; i < 3; ++i) {
+        int y = (int)t.position[i].y;
+        if (y < y_b) { 
+            y_b = y; 
+            b = i;
+        }
+        if (y > y_t) { 
+            y_t = y; 
+            t = i;
+        }
+    }
 
 
-
-
-  // TODO: sort vertices counter-clockwise! Idea: use cross product
+ 
 
   DrawSpan(
-      (int)t.position[0].x, 
-      (int)t.position[1].x, 
-      (int)t.position[1].y, 
-      (float)t.position[0].z, 
-      (float)t.position[1].z,
-      t.color[0],
-      t.color[1]
+      (int)tr.position[0].x, 
+      (int)tr.position[1].x, 
+      (int)tr.position[1].y, 
+      (float)tr.position[0].z, 
+      (float)tr.position[1].z,
+      tr.color[0],
+      tr.color[1]
   );
 
   // TODO Aufgabe 2: Ersetzen des Zeichnens der Eckpunkte 

@@ -52,6 +52,9 @@ namespace Rasterizer
     static bool CompareTriangle(const Raytracer::Objects::Triangle &t1,
                                 const Raytracer::Objects::Triangle &t2);
 
+
+    static bool CompareVertexScanline(const glm::vec3& p1, const glm::vec3& p2);
+
     /**
      * Fills a horizontal span of pixels.
      *
@@ -92,6 +95,9 @@ namespace Rasterizer
      *   mean z value.
      */
     void SortTriangles(std::vector<Raytracer::Objects::Triangle> &triangles);
+
+
+
     
 
     /**
@@ -126,6 +132,8 @@ namespace Rasterizer
      * Constructs a new SimpleRasterizer object.
      */
     SimpleRasterizer();
+
+    
 
     
 

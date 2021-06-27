@@ -1,1 +1,4 @@
 *.opendb
+
+.vs/
+Debug/
