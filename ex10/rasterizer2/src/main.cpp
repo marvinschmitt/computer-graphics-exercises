@@ -183,30 +183,30 @@ void Render(int width, int height, bool rotate, const char *filename)
 /**
  * The main program
  */
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	// Set this to true to have the geometry rotate by default.
-	bool rotate = false; // true;
+	bool rotate = false;
 
 	// Set this to false to use just a single triangle by default, 
   // or to true to load a more complex geometry.
-	bool loadFile = false; // true;
+	bool loadFile = true;
 
-  // Set this to NULL to use just a single triangle to default,
-  // or to a filename to load a more complex geometry.
-  const char *filename = "data/kopf_subdivided.raw";
+	// Set this to NULL to use just a single triangle to default,
+	// or to a filename to load a more complex geometry.
+	const char* filename = "data/kopf_subdivided.raw";
 
-  for (int i = 1; ((i < argc) && (i < 3)); ++i)
-  {
-    if (strcmp(argv[i], "-rotate") == 0)
-      rotate = true;
-    else if (strcmp(argv[i], "-norotate") == 0)
-      rotate = false;
-    else if (strcmp(argv[i], "-nogeometry") == 0)
-      filename = NULL;
-    else
-      filename = argv[i];
-  }
+	for (int i = 1; ((i < argc) && (i < 3)); ++i)
+	{
+		if (strcmp(argv[i], "-rotate") == 0)
+			rotate = true;
+		else if (strcmp(argv[i], "-norotate") == 0)
+			rotate = false;
+		else if (strcmp(argv[i], "-nogeometry") == 0)
+			filename = NULL;
+		else
+			filename = argv[i];
+	}
 	filename = NULL;
 	Render(512, 512, rotate, filename);
 	return 0;

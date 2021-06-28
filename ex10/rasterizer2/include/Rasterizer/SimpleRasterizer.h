@@ -53,8 +53,6 @@ namespace Rasterizer
                                 const Raytracer::Objects::Triangle &t2);
 
 
-    static bool CompareVertexScanline(const glm::vec3& p1, const glm::vec3& p2);
-
     /**
      * Fills a horizontal span of pixels.
      *

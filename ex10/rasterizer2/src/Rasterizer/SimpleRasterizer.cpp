@@ -21,11 +21,6 @@ SimpleRasterizer::SimpleRasterizer()
   ambientLight = vec3(0.01f);
 }
 
-bool SimpleRasterizer::CompareVertexScanline(const vec3& p1, const vec3& p2)
-{
-    return (p1.x < p2.x);
-}
-
 bool SimpleRasterizer::CompareTriangle(const Triangle &t1, const Triangle &t2)
 {
   // These aren't actually the mean values, but since both are off by a constant factor (3),
@@ -44,7 +39,6 @@ void SimpleRasterizer::DrawSpan(int x1, int x2, int y, float z1, float z2, const
         x2 = temp;
     }
 
-    float lambda;
     vec3 color;
 
     for (int x = x1; x < x2; ++x)  // x<x2 to not draw right pixel
@@ -70,17 +64,6 @@ float SimpleRasterizer::delta_x(const Triangle& t, int next, int cur) {
 
 void SimpleRasterizer::DrawTriangle(const Triangle &t)
 {
-
-  //for (int i = 0; i < 3; ++i)
-  //{
-  //  int x = (int)t.position[i].x;
-  //  int y = (int)t.position[i].y;
-  //  if ((x > 0) && (x < image->GetWidth()) && (y > 0) && (y < image->GetHeight()))
-  //  {
-  //    image->SetPixel(x, y, t.color[i]);
-  //  }
-  //}
-  // 
   
     // Create triangle tr that has sorted vertices of t. We can't sort in t since it's const in the provided code
     vector<int> idx{ 0, 1, 2 };
@@ -111,19 +94,19 @@ void SimpleRasterizer::DrawTriangle(const Triangle &t)
     }
 
 
-    vec3 P_t = tr.position[idx_t];
     float z = (tr.position[0].z + tr.position[0].z + tr.position[0].z) / 3;
     int y = y_t;
-    float x_l = P_t.x;
-    float x_r = P_t.x;
+    float x_l = tr.position[idx_t].x;
+    float x_r = tr.position[idx_t].x;
     int cur_l = idx_t;
     int next_l = idx_t - 1;
     int cur_r = idx_t;
     int next_r = idx_t + 1;
+    float lambda_l;
+    float lambda_r;
 
-
-    vec3 color_l{ 1.0, 0.0, 0.5 };
-    vec3 color_r{ 0.0, 0.5, 1.0 };
+    vec3 color_l = tr.color[idx_t];
+    vec3 color_r = tr.color[idx_t];
 
     // main scanline algorithm
     do {
@@ -131,6 +114,12 @@ void SimpleRasterizer::DrawTriangle(const Triangle &t)
         y++;
         x_l += delta_x(tr, next_l, cur_l);
         x_r += delta_x(tr, next_r, cur_r);
+
+        // colors through naive barycentric interpolation along edges
+        lambda_l = length(tr.position[cur_l % 3] - vec3{ x_l, y, z }) / length(tr.position[cur_l % 3] - tr.position[next_l % 3]);
+        color_l = lambda_l * tr.color[next_l % 3] + (1 - lambda_l) * tr.color[cur_l % 3];
+        lambda_r = length(tr.position[cur_r % 3] - vec3{ x_r, y, z }) / length(tr.position[cur_r % 3] - tr.position[next_r % 3]);
+        color_r = lambda_r * tr.color[next_r % 3] + (1 - lambda_r) * tr.color[cur_r % 3];
         
         if (y >= (int)tr.position[next_l % 3].y) {
             cur_l = next_l;
