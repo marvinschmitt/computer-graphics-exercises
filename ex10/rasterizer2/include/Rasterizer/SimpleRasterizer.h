@@ -70,6 +70,8 @@ namespace Rasterizer
      *   side (x2 or x1, whichever is greater).
      */
     void DrawSpan(int x1, int x2, int y, float z1, float z2, const glm::vec3 &color1, const glm::vec3 &color2);
+
+    static float delta_x(const Raytracer::Objects::Triangle& t, int next, int cur);
     
     /**
      * Draws a single triangle.

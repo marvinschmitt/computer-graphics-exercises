@@ -44,19 +44,33 @@ void SimpleRasterizer::DrawSpan(int x1, int x2, int y, float z1, float z2, const
         x2 = temp;
     }
 
-    for (int x = x1; x <= x2; ++x) 
-    {
+    float lambda;
+    vec3 color;
+
+    for (int x = x1; x < x2; ++x)  // x<x2 to not draw right pixel
+    {   
+        color = color1 + (float)(x - x1) / (x2 - x1) * (color2 - color1);
         if ((x > 0) && (x < image->GetWidth()) && (y > 0) && (y < image->GetHeight()))
         {
-            image->SetPixel(x, y, color1);
+            image->SetPixel(x, y, color);
         }
     }
   // TODO Aufgabe 2: Ersetzen des Zeichnens der Eckpunkte 
   // durch Dreiecksrasterisierer, Gouraud Shading, [z-Buffering]
 }
 
+float SimpleRasterizer::delta_x(const Triangle& t, int next, int cur) {
+    float x_t_prime = t.position[next % 3].x;
+    float x_t = t.position[cur % 3].x;
+    float y_t_prime = t.position[next % 3].y;
+    float y_t = t.position[cur % 3].y;
+    float delta = (x_t_prime - x_t) / (y_t_prime - y_t);
+    return delta;
+}
+
 void SimpleRasterizer::DrawTriangle(const Triangle &t)
 {
+
   //for (int i = 0; i < 3; ++i)
   //{
   //  int x = (int)t.position[i].x;
@@ -70,7 +84,7 @@ void SimpleRasterizer::DrawTriangle(const Triangle &t)
   
     // Create triangle tr that has sorted vertices of t. We can't sort in t since it's const in the provided code
     vector<int> idx{ 0, 1, 2 };
-    sort(idx.begin(), idx.end(), [&](int i, int j) {return t.position[i].x < t.position[j].x; });
+    sort(idx.begin(), idx.end(), [&](int i, int j) {return t.position[i].y > t.position[j].y; });
 
     Triangle tr;
     for (int i = 0; i < 3; ++i) {
@@ -78,36 +92,55 @@ void SimpleRasterizer::DrawTriangle(const Triangle &t)
        tr.SetVertex(i, t.position[t_idx], t.normal[t_idx], t.color[t_idx]);
     }
 
-    // somehow, INFINITY didn't work and led to y_b = 0 :(
-    int y_t = -10000;
-    int y_b = 10000;
-    int t = -1;
-    int b = -1;
+    // somehow, INFINITY didn't work...
+    int y_t = 100000;
+    int y_b = -100000;
+    int idx_t = -1;
+    int idx_b = -1;
 
     for (int i = 0; i < 3; ++i) {
-        int y = (int)t.position[i].y;
-        if (y < y_b) { 
+        int y = (int)tr.position[i].y;
+        if (y > y_b) { 
             y_b = y; 
-            b = i;
+            idx_b = i;
         }
-        if (y > y_t) { 
+        if (y < y_t) { 
             y_t = y; 
-            t = i;
+            idx_t = i;
         }
     }
 
 
- 
+    vec3 P_t = tr.position[idx_t];
+    float z = (tr.position[0].z + tr.position[0].z + tr.position[0].z) / 3;
+    int y = y_t;
+    float x_l = P_t.x;
+    float x_r = P_t.x;
+    int cur_l = idx_t;
+    int next_l = idx_t - 1;
+    int cur_r = idx_t;
+    int next_r = idx_t + 1;
 
-  DrawSpan(
-      (int)tr.position[0].x, 
-      (int)tr.position[1].x, 
-      (int)tr.position[1].y, 
-      (float)tr.position[0].z, 
-      (float)tr.position[1].z,
-      tr.color[0],
-      tr.color[1]
-  );
+
+    vec3 color_l{ 1.0, 0.0, 0.5 };
+    vec3 color_r{ 0.0, 0.5, 1.0 };
+
+    // main scanline algorithm
+    do {
+        DrawSpan((int)x_l, (int)x_r, y, z, z, color_l, color_r);
+        y++;
+        x_l += delta_x(tr, next_l, cur_l);
+        x_r += delta_x(tr, next_r, cur_r);
+        
+        if (y >= (int)tr.position[next_l % 3].y) {
+            cur_l = next_l;
+            next_l--;
+        }
+        if (y >= (int)tr.position[next_r % 3].y) {
+            cur_r = next_r;
+            next_r++;
+        }
+    } while (y < y_b);
 
   // TODO Aufgabe 2: Ersetzen des Zeichnens der Eckpunkte 
   // durch Dreiecksrasterisierer, Gouraud Shading, [z-Buffering]
